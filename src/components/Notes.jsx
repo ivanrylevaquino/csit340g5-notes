@@ -1,5 +1,5 @@
 import NoteCard from './NoteCard.jsx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const startingNotes = [
   {
@@ -19,12 +19,9 @@ function Notes() {
     const saved = localStorage.getItem('notes')
     return saved ? JSON.parse(saved) : startingNotes
   })    
-    const [formData, setFormData] = useState({
-      title: '',
-      body: '',
-    })
-    const [form, setForm] = useState({ title: '', body: '' })
-    const [search, setSearch] = useState('')
+  const [form, setForm] = useState({ title: '', body: '' })
+  const [search, setSearch] = useState('')
+  const titleRef = useRef(null)
  
   useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes))
@@ -32,16 +29,16 @@ function Notes() {
  
   useEffect(() => {
   const id = setTimeout(() => {
-    localStorage.setItem('draft', JSON.stringify(formData))
-    console.log('draft saved:', formData.title)
+    localStorage.setItem('draft', JSON.stringify(form))
+    console.log('draft saved:', form.title)
   }, 1000)
   return () => clearTimeout(id)
-}, [formData])
+}, [form])
   
     function handleChange(event) {
       const { name, value } = event.target
-      setFormData({
-        ...formData,
+      setForm({
+        ...form,
         [name]: value,
       })
     }
@@ -49,8 +46,8 @@ function Notes() {
     function handleSubmit(event) {
       event.preventDefault()
 
-      const title = formData.title.trim()
-      const body = formData.body.trim()
+      const title = form.title.trim()
+      const body = form.body.trim()
 
       if (!title || !body) {
         return
@@ -64,10 +61,11 @@ function Notes() {
 
       setNotes([...notes, newNote])
 
-      setFormData({
+      setForm({
         title: '',
         body: '',
       })
+      titleRef.current.focus()
     }
 
     function handleDelete(id) {
@@ -97,15 +95,16 @@ function Notes() {
         <form onSubmit={handleSubmit} className="grid gap-3">
           <p className="text-[13px] font-normal tracking-wide text-[#949494]">NEW NOTE</p>
           <input
+            ref={titleRef}
             name="title"
-            value={formData.title}
+            value={form.title}
             onChange={handleChange}
             placeholder="Title"
             className="h-[52px] w-full border border-[#e6e6e6] px-4 text-lg outline-none placeholder:text-black/40 placeholder:italic focus:border-[#cf7d7d]"
           />
           <textarea
             name="body"
-            value={formData.body}
+            value={form.body}
             onChange={handleChange}
             placeholder="Write your note"
             className="h-[120px] w-full resize-none py-3 border border-[#e6e6e6] px-4 text-lg outline-none placeholder:text-black/40 placeholder:italic focus:border-[#cf7d7d]"
