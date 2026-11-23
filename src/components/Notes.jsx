@@ -20,7 +20,10 @@ function Notes() {
     const saved = localStorage.getItem('notes')
     return saved ? JSON.parse(saved) : startingNotes
   })    
-  const [form, setForm] = useState({ title: '', body: '' })
+  const [form, setForm] = useState(() => {
+    const saved = localStorage.getItem('draft')
+    return saved ? JSON.parse(saved) : { title: '', body: '' }
+  })
   const [search, setSearch] = useState('')
   const titleRef = useRef(null)
  
@@ -33,6 +36,7 @@ function Notes() {
     localStorage.setItem('draft', JSON.stringify(form))
     console.log('draft saved:', form.title)
   }, 1000)
+
   return () => clearTimeout(id)
 }, [form])
   
