@@ -23,11 +23,21 @@ function Notes() {
       title: '',
       body: '',
     })
+    const [form, setForm] = useState({ title: '', body: '' })
     const [search, setSearch] = useState('')
  
   useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes))
   }, [notes])
+ 
+  useEffect(() => {
+  const id = setTimeout(() => {
+    localStorage.setItem('draft', JSON.stringify(formData))
+    console.log('draft saved:', formData.title)
+  }, 1000)
+  return () => clearTimeout(id)
+}, [formData])
+  
     function handleChange(event) {
       const { name, value } = event.target
       setFormData({
